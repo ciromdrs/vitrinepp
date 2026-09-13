@@ -3,8 +3,6 @@
  */
 
 import { ref } from 'vue'
-import { marcasService } from '@/services/marcasService'
-import { useApi } from './useApi'
 import { useNotification } from './useNotification'
 
 export function useMarcas() {

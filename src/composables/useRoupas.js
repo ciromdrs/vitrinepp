@@ -3,8 +3,6 @@
  */
 
 import { ref } from 'vue'
-import { roupasService } from '@/services/roupasService'
-import { useApi } from './useApi'
 import { useNotification } from './useNotification'
 
 export function useRoupas() {

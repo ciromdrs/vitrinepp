@@ -3,7 +3,7 @@ import MarcasContainer from '../MarcasContainer.vue';
 import MarcasPop from '../MarcasPop.vue';
 import LoadingSpinner from '../common/LoadingSpinner.vue';
 import ErrorDisplay from '../common/ErrorDisplay.vue';
-import axios from 'axios';
+import { marcas as marcasData } from '../../data/roupas';
 
 export default {
     components: {
@@ -21,34 +21,11 @@ export default {
         }
     },
     created() {
-        this.carregarMarcas()
-    },
-    methods: {
-        async carregarMarcas() {
-            this.isLoading = true
-            this.error = null
-            
-            try {
-                // Marcas normal
-                let endpoint = this.baseURL + 'marcas/'
-                const responseMarcas = await axios.get(endpoint)
-                this.marcas = responseMarcas.data.results || []
-
-                // Populares (4 mais visitadas)
-                endpoint = this.baseURL + 'marcas/mais-visitadas/'
-                const responsePopulares = await axios.get(endpoint)
-                this.populares = responsePopulares.data || []
-            } catch (error) {
-                console.error('Erro ao carregar marcas:', error)
-                this.marcas = []
-                this.populares = []
-                this.error = error.response?.data?.detail || error.response?.data?.message || error.message || 'Erro ao carregar marcas. Verifique sua conexão.'
-            } finally {
-                this.isLoading = false
-            }
-        }
-    }
+  this.marcas = [...marcas]
+  this.populares = marcas.slice(0, 4)
 }
+}
+   
 </script>
 
 <template>

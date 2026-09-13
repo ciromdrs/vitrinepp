@@ -27,7 +27,6 @@ app.use(router)
 app.use(VueImageZoomer)
 
 // Variável global do link p/ puxar do backend
-app.config.globalProperties.baseURL = 'https://testeapi-jabb.onrender.com/'
 
 // Handler de erros não capturados
 window.addEventListener('unhandledrejection', (event) => {
