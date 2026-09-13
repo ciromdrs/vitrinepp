@@ -5,8 +5,7 @@ import Conecte from '../Conecte.vue'
 import Descubra from '../Descubra.vue'
 import LoadingSpinner from '../common/LoadingSpinner.vue'
 import ErrorDisplay from '../common/ErrorDisplay.vue'
-import { destaques } from '../../data/roupas'
-import axios from 'axios';
+import { destaques, roupas as roupasData } from '../../data/roupas'
 
 export default {
   components: {
@@ -25,29 +24,10 @@ export default {
       error: null
     }
   },
-  async created() {
-    await this.carregarDados()
-  },
-  methods: {
-    async carregarDados() {
-      this.isLoading = true
-      this.error = null
-      
-      try {
-        const endpoint = this.baseURL + 'roupas/home/'
-        const response = await axios.get(endpoint)
-        console.log(response.data)
-        this.destaques = response.data.destaques || []
-        this.roupas = response.data.outros || []
-      } catch (error) {
-        console.error('Erro ao carregar home:', error)
-        this.destaques = []
-        this.roupas = []
-        this.error = error.response?.data?.detail || error.response?.data?.message || error.message || 'Erro ao carregar página inicial. Verifique sua conexão.'
-      } finally {
-        this.isLoading = false
-      }
-    }
+  created() {
+    this.destaques = [...destaques]
+    this.roupas = [...roupasData]
+    this.isLoading = false
   }
 }
 </script>

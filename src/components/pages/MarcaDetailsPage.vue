@@ -5,7 +5,7 @@ import MarcaDestaques from '../MarcaDestaques.vue';
 import RoupaContainer from '../RoupaContainer.vue';
 import LoadingSpinner from '../common/LoadingSpinner.vue';
 import ErrorDisplay from '../common/ErrorDisplay.vue';
-import axios from 'axios';
+import { marcas, roupas } from '../../data/roupas'
 
 export default {
     components: {
@@ -36,46 +36,31 @@ export default {
     },
     methods: {
         async carregarDados() {
-            this.marcaId = Number(this.$route.params.id)
-            this.isLoading = true
-            this.error = null
-            
-            try {
-                console.log(this.marcaId)
-                
-                // Pegar dados da marca
-                let endpoint = this.baseURL + `marcas/${this.marcaId}`
-                const responseMarca = await axios.get(endpoint)
-                console.log(responseMarca.data)
-                this.marca = responseMarca.data
+  this.isLoading = true
+  this.error = null
 
-                // Pegar roupas da marca
-                endpoint = this.baseURL + `marcas/${this.marcaId}/produtos/`
-                const responseRoupas = await axios.get(endpoint)
-                console.log(responseRoupas.data)
-                this.roupas = responseRoupas.data.length ? responseRoupas.data : null
+  try {
+    const id = this.$route.params.id
 
-                // Pegar roupas destaque
-                endpoint = this.baseURL + `/marcas/${this.marcaId}/top-3-produtos/`
-                try {
-                    const responseDestaque = await axios.get(endpoint)
-                    this.roupasDestaque = responseDestaque.data.length ? responseDestaque.data : null
-                    console.log('roupas destaque: ', responseDestaque.data)
-                } catch (destaqueError) {
-                    console.warn('Erro ao carregar destaques:', destaqueError)
-                    // Não falha a página toda se os destaques falharem
-                    this.roupasDestaque = null
-                }
-            } catch (error) {
-                console.error('Erro:', error)
-                this.marca = null
-                this.roupas = null
-                this.roupasDestaque = null
-                this.error = error.response?.data?.detail || error.response?.data?.message || error.message || 'Erro ao carregar dados da marca. Verifique sua conexão.'
-            } finally {
-                this.isLoading = false
-            }
-        }
+    this.marca = marcas.find(
+      item => String(item.id_marca) === String(id)
+    )
+
+    if (!this.marca) {
+      throw new Error('Marca não encontrada')
+    }
+
+    this.produtos = roupas.filter(
+      roupa => roupa.marca === this.marca.nome
+    )
+
+    this.topProdutos = this.produtos.slice(0, 3)
+  } catch (error) {
+    this.error = error
+  } finally {
+    this.isLoading = false
+  }
+}
     }
 }
 </script>
