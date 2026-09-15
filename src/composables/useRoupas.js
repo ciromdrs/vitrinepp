@@ -39,67 +39,6 @@ export function useRoupas() {
   }
 
   /**
-   * Cria uma nova roupa
-   */
-  const criarRoupa = async (roupaData) => {
-    const { data } = await execute(
-      () => roupasService.create(roupaData),
-      {
-        onSuccess: () => success('Roupa criada com sucesso!'),
-      }
-    )
-    
-    if (data) {
-      roupas.value.push(data)
-    }
-    
-    return data
-  }
-
-  /**
-   * Atualiza uma roupa
-   */
-  const atualizarRoupa = async (id, roupaData) => {
-    const { data } = await execute(
-      () => roupasService.update(id, roupaData),
-      {
-        onSuccess: () => success('Roupa atualizada com sucesso!'),
-      }
-    )
-    
-    if (data) {
-      const index = roupas.value.findIndex(r => r.id === id)
-      if (index !== -1) {
-        roupas.value[index] = data
-      }
-      roupaAtual.value = data
-    }
-    
-    return data
-  }
-
-  /**
-   * Deleta uma roupa
-   */
-  const deletarRoupa = async (id) => {
-    const { data } = await execute(
-      () => roupasService.delete(id),
-      {
-        onSuccess: () => success('Roupa deletada com sucesso!'),
-      }
-    )
-    
-    if (data !== null) {
-      roupas.value = roupas.value.filter(r => r.id !== id)
-      if (roupaAtual.value?.id === id) {
-        roupaAtual.value = null
-      }
-    }
-    
-    return data
-  }
-
-  /**
    * Carrega roupas por marca
    */
   const carregarRoupasPorMarca = async (marcaId) => {
@@ -119,9 +58,6 @@ export function useRoupas() {
     error,
     carregarRoupas,
     carregarRoupa,
-    criarRoupa,
-    atualizarRoupa,
-    deletarRoupa,
     carregarRoupasPorMarca,
   }
 }

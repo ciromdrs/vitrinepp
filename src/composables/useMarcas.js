@@ -38,67 +38,6 @@ export function useMarcas() {
   }
 
   /**
-   * Cria uma nova marca
-   */
-  const criarMarca = async (marcaData) => {
-    const { data } = await execute(
-      () => marcasService.create(marcaData),
-      {
-        onSuccess: () => success('Marca criada com sucesso!'),
-      }
-    )
-    
-    if (data) {
-      marcas.value.push(data)
-    }
-    
-    return data
-  }
-
-  /**
-   * Atualiza uma marca
-   */
-  const atualizarMarca = async (id, marcaData) => {
-    const { data } = await execute(
-      () => marcasService.update(id, marcaData),
-      {
-        onSuccess: () => success('Marca atualizada com sucesso!'),
-      }
-    )
-    
-    if (data) {
-      const index = marcas.value.findIndex(m => m.id === id)
-      if (index !== -1) {
-        marcas.value[index] = data
-      }
-      marcaAtual.value = data
-    }
-    
-    return data
-  }
-
-  /**
-   * Deleta uma marca
-   */
-  const deletarMarca = async (id) => {
-    const { data } = await execute(
-      () => marcasService.delete(id),
-      {
-        onSuccess: () => success('Marca deletada com sucesso!'),
-      }
-    )
-    
-    if (data !== null) {
-      marcas.value = marcas.value.filter(m => m.id !== id)
-      if (marcaAtual.value?.id === id) {
-        marcaAtual.value = null
-      }
-    }
-    
-    return data
-  }
-
-  /**
    * Carrega roupas de uma marca
    */
   const carregarRoupasDaMarca = async (id) => {
@@ -113,9 +52,6 @@ export function useMarcas() {
     error,
     carregarMarcas,
     carregarMarca,
-    criarMarca,
-    atualizarMarca,
-    deletarMarca,
     carregarRoupasDaMarca,
   }
 }
