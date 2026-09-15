@@ -4,24 +4,38 @@
 
 import { ref } from 'vue'
 import { useNotification } from './useNotification'
-
+import {getLinhas} from '@/services/planilha'
+import { SHEET_NAMES } from '@/constants/sheetNames'
+import { carregarRoupasPorMarca } from '@/composables/useRoupas'
 export function useMarcas() {
   const marcas = ref([])
   const marcaAtual = ref(null)
-  const { isLoading, error, execute } = useApi()
   const { success } = useNotification()
 
   /**
    * Carrega todas as marcas
    */
-  const carregarMarcas = async (params = {}) => {
-    const { data } = await execute(() => marcasService.getAll(params))
-    
-    if (data) {
-      marcas.value = data
-    }
-    
-    return data
+  const carregarMarcas = async () => {
+    const rows = await  getLinhas(SHEET_NAMES.MARCASS);
+    let list_marcas = [];
+
+    rows.forEach(m => {
+      let marca = {
+        id: m[0],
+        nome: m[1],
+        banner: m[2],
+        fotoPerfil: m[3],
+        descricao: m[4],
+        roupas: carregarRoupasPorMarca(),
+        telefone: m[5]
+      };
+
+      list_marcas.push(marca);
+    });
+
+    marcas.value = list_marcas;
+
+    return marcas;
   }
 
   /**
@@ -40,8 +54,8 @@ export function useMarcas() {
   /**
    * Carrega roupas de uma marca
    */
-  const carregarRoupasDaMarca = async (id) => {
-    const { data } = await execute(() => marcasService.getRoupas(id))
+  const carregarRoupasDaMarca = async (nomeMarca) => {
+    const data = await carregarRoupasPorMarca(nomeMarca)
     return data
   }
 

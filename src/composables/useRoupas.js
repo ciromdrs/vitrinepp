@@ -4,25 +4,40 @@
 
 import { ref } from 'vue'
 import { useNotification } from './useNotification'
+import { getLinhas } from '@/services/planilha'
+import { SHEET_NAMES } from '@/constants/sheetNames'
 
 export function useRoupas() {
   const roupas = ref([])
   const roupaAtual = ref(null)
-  const { isLoading, error, execute } = useApi()
   const { success } = useNotification()
 
   /**
    * Carrega todas as roupas
    */
-  const carregarRoupas = async (params = {}) => {
-    const { data } = await execute(() => roupasService.getAll(params))
-    
-    if (data) {
-      // Se a API retorna paginação, pega o array results
-      roupas.value = data.results || data
-    }
-    
-    return data
+  const carregarRoupas = async () => {
+    const rows = await getLinhas(SHEET_NAMES.ROUPAS);
+    let list_roupas = [];
+
+    rows.forEach(r => {
+      let roupa = {
+        id: r[0],
+        nome: r[1],
+        descricao: r[2],
+        preco: r[3],
+        img: r[4],
+        extraImgs: r[5],
+        marca_nome: r[6],
+        marca_email: r[7],
+        tamanhos: r[8]
+      };
+
+      list_roupas.push(roupa);
+    });
+
+    roupas.value = list_roupas;
+
+    return roupas;
   }
 
   /**
@@ -41,16 +56,12 @@ export function useRoupas() {
   /**
    * Carrega roupas por marca
    */
-  const carregarRoupasPorMarca = async (marcaId) => {
-    const { data } = await execute(() => roupasService.getByMarca(marcaId))
-    
-    if (data) {
-      roupas.value = data
-    }
-    
-    return data
-  }
+  const carregarRoupasPorMarca = async (marcaNome) => {
+    await carregarRoupas(SHEET_NAMES.ROUPAS);
 
+    roupas.value = roupas.value.filter(r => r.marca_nome === marcaNome);
+    return roupas;
+  }
   return {
     roupas,
     roupaAtual,
