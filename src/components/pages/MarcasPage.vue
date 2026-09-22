@@ -21,8 +21,8 @@ export default {
         }
     },
     created() {
-  this.marcas = [...marcas]
-  this.populares = marcas.slice(0, 4)
+  this.marcas = [...marcasData]
+  this.populares = marcasData.slice(0, 4)
 }
 }
    
