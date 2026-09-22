@@ -4,25 +4,40 @@
 
 import { ref } from 'vue'
 import { useNotification } from './useNotification'
+import { getLinhas } from '@/services/planilha'
+import { SHEET_NAMES } from '@/constants/sheetNames'
 
 export function useRoupas() {
   const roupas = ref([])
   const roupaAtual = ref(null)
-  const { isLoading, error, execute } = useApi()
   const { success } = useNotification()
 
   /**
    * Carrega todas as roupas
    */
-  const carregarRoupas = async (params = {}) => {
-    const { data } = await execute(() => roupasService.getAll(params))
-    
-    if (data) {
-      // Se a API retorna paginação, pega o array results
-      roupas.value = data.results || data
-    }
-    
-    return data
+  const carregarRoupas = async () => {
+    const rows = await getLinhas(SHEET_NAMES.ROUPAS);
+    let list_roupas = [];
+
+    rows.forEach(r => {
+      let roupa = {
+        id: r[0],
+        nome: r[1],
+        descricao: r[2],
+        preco: r[3],
+        img: r[4],
+        extraImgs: r[5],
+        marca_nome: r[6],
+        marca_email: r[7],
+        tamanhos: r[8]
+      };
+
+      list_roupas.push(roupa);
+    });
+
+    roupas.value = list_roupas;
+
+    return roupas;
   }
 
   /**
@@ -39,79 +54,14 @@ export function useRoupas() {
   }
 
   /**
-   * Cria uma nova roupa
-   */
-  const criarRoupa = async (roupaData) => {
-    const { data } = await execute(
-      () => roupasService.create(roupaData),
-      {
-        onSuccess: () => success('Roupa criada com sucesso!'),
-      }
-    )
-    
-    if (data) {
-      roupas.value.push(data)
-    }
-    
-    return data
-  }
-
-  /**
-   * Atualiza uma roupa
-   */
-  const atualizarRoupa = async (id, roupaData) => {
-    const { data } = await execute(
-      () => roupasService.update(id, roupaData),
-      {
-        onSuccess: () => success('Roupa atualizada com sucesso!'),
-      }
-    )
-    
-    if (data) {
-      const index = roupas.value.findIndex(r => r.id === id)
-      if (index !== -1) {
-        roupas.value[index] = data
-      }
-      roupaAtual.value = data
-    }
-    
-    return data
-  }
-
-  /**
-   * Deleta uma roupa
-   */
-  const deletarRoupa = async (id) => {
-    const { data } = await execute(
-      () => roupasService.delete(id),
-      {
-        onSuccess: () => success('Roupa deletada com sucesso!'),
-      }
-    )
-    
-    if (data !== null) {
-      roupas.value = roupas.value.filter(r => r.id !== id)
-      if (roupaAtual.value?.id === id) {
-        roupaAtual.value = null
-      }
-    }
-    
-    return data
-  }
-
-  /**
    * Carrega roupas por marca
    */
-  const carregarRoupasPorMarca = async (marcaId) => {
-    const { data } = await execute(() => roupasService.getByMarca(marcaId))
-    
-    if (data) {
-      roupas.value = data
-    }
-    
-    return data
-  }
+  const carregarRoupasPorMarca = async (marcaNome) => {
+    await carregarRoupas(SHEET_NAMES.ROUPAS);
 
+    roupas.value = roupas.value.filter(r => r.marca_nome === marcaNome);
+    return roupas;
+  }
   return {
     roupas,
     roupaAtual,
@@ -119,9 +69,6 @@ export function useRoupas() {
     error,
     carregarRoupas,
     carregarRoupa,
-    criarRoupa,
-    atualizarRoupa,
-    deletarRoupa,
     carregarRoupasPorMarca,
   }
 }

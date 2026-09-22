@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@googleapis/sheets": "^18.0.0",
     "bootstrap-icons-vue": "^1.11.3",
     "vue": "^3.5.18",
     "vue-image-zoomer": "^2.4.4",

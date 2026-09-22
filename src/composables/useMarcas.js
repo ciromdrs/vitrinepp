@@ -4,24 +4,38 @@
 
 import { ref } from 'vue'
 import { useNotification } from './useNotification'
-
+import {getLinhas} from '@/services/planilha'
+import { SHEET_NAMES } from '@/constants/sheetNames'
+import { carregarRoupasPorMarca } from '@/composables/useRoupas'
 export function useMarcas() {
   const marcas = ref([])
   const marcaAtual = ref(null)
-  const { isLoading, error, execute } = useApi()
   const { success } = useNotification()
 
   /**
    * Carrega todas as marcas
    */
-  const carregarMarcas = async (params = {}) => {
-    const { data } = await execute(() => marcasService.getAll(params))
-    
-    if (data) {
-      marcas.value = data
-    }
-    
-    return data
+  const carregarMarcas = async () => {
+    const rows = await  getLinhas(SHEET_NAMES.MARCASS);
+    let list_marcas = [];
+
+    rows.forEach(m => {
+      let marca = {
+        id: m[0],
+        nome: m[1],
+        banner: m[2],
+        fotoPerfil: m[3],
+        descricao: m[4],
+        roupas: carregarRoupasPorMarca(),
+        telefone: m[5]
+      };
+
+      list_marcas.push(marca);
+    });
+
+    marcas.value = list_marcas;
+
+    return marcas;
   }
 
   /**
@@ -38,71 +52,10 @@ export function useMarcas() {
   }
 
   /**
-   * Cria uma nova marca
-   */
-  const criarMarca = async (marcaData) => {
-    const { data } = await execute(
-      () => marcasService.create(marcaData),
-      {
-        onSuccess: () => success('Marca criada com sucesso!'),
-      }
-    )
-    
-    if (data) {
-      marcas.value.push(data)
-    }
-    
-    return data
-  }
-
-  /**
-   * Atualiza uma marca
-   */
-  const atualizarMarca = async (id, marcaData) => {
-    const { data } = await execute(
-      () => marcasService.update(id, marcaData),
-      {
-        onSuccess: () => success('Marca atualizada com sucesso!'),
-      }
-    )
-    
-    if (data) {
-      const index = marcas.value.findIndex(m => m.id === id)
-      if (index !== -1) {
-        marcas.value[index] = data
-      }
-      marcaAtual.value = data
-    }
-    
-    return data
-  }
-
-  /**
-   * Deleta uma marca
-   */
-  const deletarMarca = async (id) => {
-    const { data } = await execute(
-      () => marcasService.delete(id),
-      {
-        onSuccess: () => success('Marca deletada com sucesso!'),
-      }
-    )
-    
-    if (data !== null) {
-      marcas.value = marcas.value.filter(m => m.id !== id)
-      if (marcaAtual.value?.id === id) {
-        marcaAtual.value = null
-      }
-    }
-    
-    return data
-  }
-
-  /**
    * Carrega roupas de uma marca
    */
-  const carregarRoupasDaMarca = async (id) => {
-    const { data } = await execute(() => marcasService.getRoupas(id))
+  const carregarRoupasDaMarca = async (nomeMarca) => {
+    const data = await carregarRoupasPorMarca(nomeMarca)
     return data
   }
 
@@ -113,9 +66,6 @@ export function useMarcas() {
     error,
     carregarMarcas,
     carregarMarca,
-    criarMarca,
-    atualizarMarca,
-    deletarMarca,
     carregarRoupasDaMarca,
   }
 }
