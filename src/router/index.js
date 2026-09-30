@@ -1,7 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import Home from '../components/pages/Home.vue'
-import RoupaPagina from '../components/pages/RoupaPagina.vue'
-import Loja from '../components/pages/Loja.vue'
 import MarcasPage from '../components/pages/MarcasPage.vue'
 import MarcaDetailsPage from '../components/pages/MarcaDetailsPage.vue'
 import SobreNos from '../components/pages/SobreNos.vue'
@@ -15,18 +13,6 @@ const router = createRouter({
             name: 'Home',
             component: Home,
             meta: { title: 'Home' }
-        },
-        {
-            path: '/loja',
-            name: 'Loja',
-            component: Loja,
-            meta: { title: 'Loja' }
-        },
-        {
-            path: '/loja/:id',
-            name: 'RoupaDetalhes',
-            component: RoupaPagina,
-            meta: { title: 'Detalhes da Roupa' }
         },
         {
             path: '/marcas',
