@@ -1,18 +1,24 @@
 <script>
-import { landingImg } from '../data/roupas';
+import { useLanding } from '@/composables/useLanding';
+import { onMounted, ref } from 'vue';
+
 export default {
-    data() {
-        return {
-            landingImg
-        }
-    },
+    setup() {
+        const { isloading, error, landingImgURL, carregarLandingImg } = useLanding();
+
+        onMounted(async () => {
+            await carregarLandingImg();
+        });
+        
+        return { landingImgURL, isloading, error };
+    }
 }
 </script>
 
 <template>
     <section class="conecte">
             <figure>
-                <img :src="landingImg" alt="Roupas/moda/fashion">
+                <img :src="landingImgURL.landingImg" alt="Roupas/moda/fashion">
             </figure>
             <article>
                 <h1>Conecte-se</h1>
