@@ -3,7 +3,9 @@ import MarcasContainer from '../MarcasContainer.vue';
 import MarcasPop from '../MarcasPop.vue';
 import LoadingSpinner from '../common/LoadingSpinner.vue';
 import ErrorDisplay from '../common/ErrorDisplay.vue';
-import { marcas as marcasData } from '../../data/roupas';
+import { useMarcas } from '@/composables/useMarcas.js';
+import { onMounted } from 'vue';
+import {ref} from 'vue';
 
 export default {
     components: {
@@ -12,18 +14,25 @@ export default {
         LoadingSpinner,
         ErrorDisplay
     },
-    data() {
+    setup(){
+        const {marcas, carregarMarcas, isLoading, error} = useMarcas();
+        const populares = ref([]);
+
+        onMounted(async ()=>{
+            await carregarMarcas();
+            populares.value = marcas.value.slice(0, 4);
+        })
+        
+
         return {
-            marcas: [],
-            populares: [],
-            isLoading: true,
-            error: null
+            carregarMarcas,
+            marcas,
+            populares,
+            isLoading,
+            error
         }
     },
-    created() {
-  this.marcas = [...marcasData]
-  this.populares = marcasData.slice(0, 4)
-}
+
 }
    
 </script>

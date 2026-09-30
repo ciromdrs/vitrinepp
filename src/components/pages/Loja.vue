@@ -3,7 +3,7 @@ import { BIconFunnel, BIconCaretDown, BIconSearch, BIconArrowRight } from 'boots
 import RoupaContainer from '../RoupaContainer.vue';
 import LoadingSpinner from '../common/LoadingSpinner.vue';
 import ErrorDisplay from '../common/ErrorDisplay.vue';
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import { useRoupas } from '@/composables/useRoupas';
 
 export default {
@@ -17,29 +17,57 @@ export default {
         ErrorDisplay
     },
     setup() {
-        const { roupas, isLoading, error, carregarRoupas } = useRoupas();
+        const { roupas, 
+            isLoading, 
+            error, 
+            filterBy, 
+            carregarRoupas, 
+            filtrarRoupasMaisBaratas,
+            filtrarRoupasMaisCaras,
+            filtrarRoupasMaisRecentes,
+            filtrarRoupasMaisAntigas} = useRoupas();
+
+        const filter = () => {
+            switch (filterBy.value) {
         
+              case 'id':
+                roupasFiltradas.value = filtrarRoupasMaisAntigas(roupasFiltradas)
+                break
+              case '-id':
+                roupasFiltradas.value = filtrarRoupasMaisRecentes(roupasFiltradas)
+                break
+              case 'preco':
+                roupasFiltradas.value = filtrarRoupasMaisBaratas(roupasFiltradas)
+                break
+              case '-preco':
+                roupasFiltradas.value = filtrarRoupasMaisCaras(roupasFiltradas)
+                break;
+              default:
+                roupasFiltradas.value = filtrarRoupasMaisRecentes(roupasFiltradas)
+                break
+            }
+        }
         const search = ref('');
-        const filterBy = ref('-id');
+        filterBy.value = ref('-id');
         const filterName = ref('Mais recentes');
         const filterDisplaying = ref(false);
         const activeFilterIndex = ref(1);
 
-        const filter = async () => {
-            await carregarRoupas({
-                search: search.value,
-                ordering: filterBy.value
-            });
-        };
-
+        const roupasFiltradas = ref([...roupas.value]);
+        
         const changeFilterParameters = async (newFilterBy, newFilterName, index) => {
             filterBy.value = newFilterBy;
             filterName.value = newFilterName;
             activeFilterIndex.value = index;
-            await filter();
+            filter();
         };
-
-        onMounted(() => {
+        const carregarDados = async () =>{
+            await carregarRoupas();
+            roupasFiltradas.value = roupas.value
+        }
+        onMounted(async () => {
+            await carregarRoupas()
+            carregarDados()
             filter();
         });
 
@@ -53,6 +81,7 @@ export default {
             filterDisplaying,
             activeFilterIndex,
             filter,
+            roupasFiltradas,
             changeFilterParameters
         };
     }
@@ -78,7 +107,7 @@ export default {
                         <BIconSearch></BIconSearch>
                         <BIconArrowRight @click="filter"></BIconArrowRight>
                     </div>
-                    <p>{{ roupas.length }} peças</p>
+                    <p>{{ roupasFiltradas.length }} peças</p>
                 </div>
                 <div class="type" @click="filterDisplaying = !filterDisplaying">
                     <p>{{ filterName }}</p>
@@ -99,14 +128,6 @@ export default {
                     :class="{ current: activeFilterIndex == 2}">Mais antigos</button>
     
                 <button class="filtro" 
-                    @click="changeFilterParameters('-n_visualizacoes', 'Mais vistos', 3), filterDisplaying = !filterDisplaying"
-                    :class="{ current: activeFilterIndex == 3}">Mais vistos</button>
-    
-                <button class="filtro" 
-                    @click="changeFilterParameters('n_visualizacoes', 'Menos Vistos', 4), filterDisplaying = !filterDisplaying"
-                    :class="{ current: activeFilterIndex == 4}">Menos vistos</button>
-    
-                <button class="filtro" 
                     @click="changeFilterParameters('-preco', 'Preço: maior', 5), filterDisplaying = !filterDisplaying"
                     :class="{ current: activeFilterIndex == 5}">Preço: Maior</button>
     
@@ -115,7 +136,6 @@ export default {
                     :class="{ current: activeFilterIndex == 6}">Preço: Menor</button>
             </div>
         </section>
-        
         <ErrorDisplay 
             v-if="error && !isLoading" 
             :error="error"
@@ -123,7 +143,7 @@ export default {
             @retry="filter"
         />
         
-        <RoupaContainer v-if="!error" :roupas="roupas"></RoupaContainer>
+        <RoupaContainer v-if="!error" :roupas="roupasFiltradas"></RoupaContainer>
     </main>
 </template>
 
