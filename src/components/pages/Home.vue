@@ -5,7 +5,7 @@ import Conecte from '../Conecte.vue'
 import Descubra from '../Descubra.vue'
 import LoadingSpinner from '../common/LoadingSpinner.vue'
 import ErrorDisplay from '../common/ErrorDisplay.vue'
-import { destaques, roupas as roupasData } from '../../data/roupas'
+import {useRoupas} from '../../composables/useRoupas.js'
 
 export default {
   components: {
@@ -16,18 +16,43 @@ export default {
     LoadingSpinner,
     ErrorDisplay
   },
+  methods: {
+  async carregarDados() {
+    this.isLoading = true
+    this.error = null
+
+    try {
+      await this.carregarDestaques()
+      await this.carregarRoupas()
+    } catch (error) {
+      this.error = error
+    } finally {
+      this.isLoading = false
+    }
+  }
+  },
+  setup(){
+    const {
+      roupas, 
+      carregarDestaques,
+      carregarRoupas
+    } = useRoupas()
+
+    return {
+      roupas,
+      carregarDestaques,
+      carregarRoupas
+    }
+  },
   data() {
     return {
       destaques: [],
-      roupas: [],
       isLoading: true,
       error: null
     }
   },
-  created() {
-    this.destaques = [...destaques]
-    this.roupas = [...roupasData]
-    this.isLoading = false
+  async created() {
+    await this.carregarDados()
   }
 }
 </script>

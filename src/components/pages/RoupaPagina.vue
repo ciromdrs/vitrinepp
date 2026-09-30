@@ -21,7 +21,7 @@ export default {
     const { roupaAtual, isLoading, error, carregarRoupa } = useRoupas();
 
     const carregarDados = async () => {
-      const id = Number(route.params.id);
+      const id = route.params.id;
       if (id) {
         await carregarRoupa(id);
       }
@@ -39,7 +39,7 @@ export default {
     });
 
     return {
-      roupa: roupaAtual,
+      roupaAtual,
       isLoading,
       error,
       carregarDados
@@ -60,9 +60,9 @@ export default {
       @retry="carregarDados"
     />
     
-    <RoupaDetalhes :roupa="roupa" v-if="roupa && !isLoading"></RoupaDetalhes>
+    <RoupaDetalhes :roupa="roupaAtual" v-if="roupaAtual && !isLoading"></RoupaDetalhes>
     
-    <div v-if="!roupa && !isLoading && !error" class="not-found">
+    <div v-if="!roupaAtual && !isLoading && !error" class="not-found">
       <h1>Roupa não encontrada</h1>
       <p>A roupa que você procura não existe ou foi removida.</p>
     </div>

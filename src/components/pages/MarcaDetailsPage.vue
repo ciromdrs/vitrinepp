@@ -5,7 +5,7 @@ import MarcaDestaques from '../MarcaDestaques.vue';
 import RoupaContainer from '../RoupaContainer.vue';
 import LoadingSpinner from '../common/LoadingSpinner.vue';
 import ErrorDisplay from '../common/ErrorDisplay.vue';
-import { marcas, roupas } from '../../data/roupas'
+import { useMarcas } from '@/composables/useMarcas.js';
 
 export default {
     components: {
@@ -36,31 +36,31 @@ export default {
     },
     methods: {
         async carregarDados() {
-  this.isLoading = true
-  this.error = null
+        const { marcas,
+            marcaAtual,
+            isLoading,
+            error,
+            carregarMarca,
+            carregarRoupasDaMarca
+        } = useMarcas();
+        try {
+            const id = this.$route.params.id
 
-  try {
-    const id = this.$route.params.id
+            this.marca = carregarMarca(String(id))
 
-    this.marca = marcas.find(
-      item => String(item.id_marca) === String(id)
-    )
+            if (!this.marca) {
+                throw new Error('Marca não encontrada');
+            }
 
-    if (!this.marca) {
-      throw new Error('Marca não encontrada')
+            this.produtos = carregarRoupasDaMarca(this.marca.nome);
+            this.topProdutos = this.produtos.slice(0, 3)
+            
+        } catch (error) {
+            this.error = error
+        } finally {
+            this.isLoading = false
+        }
     }
-
-    this.produtos = roupas.filter(
-      roupa => roupa.marca === this.marca.nome
-    )
-
-    this.topProdutos = this.produtos.slice(0, 3)
-  } catch (error) {
-    this.error = error
-  } finally {
-    this.isLoading = false
-  }
-}
     }
 }
 </script>

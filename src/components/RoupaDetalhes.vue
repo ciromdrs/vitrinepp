@@ -101,7 +101,7 @@ export default {
                 <div class="sizes" v-if="roupa.tamanhos && roupa.tamanhos.length">
                     <h3>Tamanhos disponíveis</h3>
                     <div class="sizesContainer">
-                        <Tamanho v-for="size in roupa.tamanhos" :key="size" :tamanho="size"></Tamanho>
+                        <Tamanho v-for="size in roupa.tamanhos.split('|')" :key="size" :tamanho="size"></Tamanho>
                     </div>
                 </div>
                 <h4 class="valor">Valor: R${{ roupa.preco }}</h4>

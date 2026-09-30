@@ -5,58 +5,55 @@
 import { ref } from 'vue'
 import { useNotification } from './useNotification'
 import {getLinhas} from '@/services/planilha'
-import { SHEET_NAMES } from '@/constants/sheetNames'
-import { carregarRoupasPorMarca } from '@/composables/useRoupas'
-export function useMarcas() {
-  const marcas = ref([])
-  const marcaAtual = ref(null)
-  const { success } = useNotification()
+import { SHEET_URL } from '@/constants/sheetNames'
+import { useRoupas } from '@/composables/useRoupas'
+import { useApi } from './useApi'
 
+export function useMarcas() {
+  const marcas = ref([]);
+  const marcaAtual = ref(null);
+  const { isLoading, error, execute } = useApi();
+  const { success } = useNotification();
+  const {carregarRoupas} = useRoupas();
   /**
    * Carrega todas as marcas
    */
   const carregarMarcas = async () => {
-    const rows = await  getLinhas(SHEET_NAMES.MARCASS);
-    let list_marcas = [];
-
-    rows.forEach(m => {
-      let marca = {
-        id: m[0],
-        nome: m[1],
-        banner: m[2],
-        fotoPerfil: m[3],
-        descricao: m[4],
-        roupas: carregarRoupasPorMarca(),
-        telefone: m[5]
-      };
-
-      list_marcas.push(marca);
-    });
-
-    marcas.value = list_marcas;
-
-    return marcas;
+    isLoading.value = true;
+    try {
+      const data = await getLinhas(SHEET_URL.MARCAS);
+      if (data) destaques.value = data;
+    }
+    catch (err){
+      error.value = err;
+    } finally{
+      isLoading.value = false
+    }
   }
 
   /**
    * Carrega uma marca por ID
    */
   const carregarMarca = async (id) => {
-    const { data } = await execute(() => marcasService.getById(id))
-    
-    if (data) {
-      marcaAtual.value = data
+    await carregarMarcas()
+    isLoading.value = true;
+    try{
+      const data  = marcas.find(r => r.id === id);
+      return data; 
+    } catch(err){
+      error.value = err;
+    } finally{
+      isLoading.value = false;
     }
-    
-    return data
   }
 
   /**
    * Carrega roupas de uma marca
    */
   const carregarRoupasDaMarca = async (nomeMarca) => {
-    const data = await carregarRoupasPorMarca(nomeMarca)
-    return data
+    await carregarRoupas()
+    return roupas.filter(r => r.marca === nomeMarca);
+    
   }
 
   return {

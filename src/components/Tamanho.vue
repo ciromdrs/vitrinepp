@@ -1,14 +1,14 @@
 <script>
 export default {
     props: {
-        tamanho: Object
+        tamanho: String
     }
 }
 </script>
 
 <template>
     <div class="size">
-        {{ tamanho.nome }}
+        {{ tamanho }}
     </div>
 </template>
 

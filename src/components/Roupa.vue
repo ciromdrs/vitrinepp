@@ -25,7 +25,7 @@ export default {
             </router-link>
         </figure>
         <div class="description">
-            <p class="loja">{{ roupa.marca_nome }}</p>
+            <p class="loja">{{ roupa.marca }}</p>
             <h3 class="nome">{{ roupa.nome }}</h3>
         </div>
     </div>
