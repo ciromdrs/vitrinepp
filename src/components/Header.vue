@@ -141,9 +141,6 @@ function toggleMenu() {
         </div>
         <nav class="links" ref="linksContainer">
             <router-link to="/" @click="toggleMenu">Home</router-link>
-            <router-link to="/loja" @click="toggleMenu"
-                :class="{ 'router-link-active': $route.path.startsWith('/loja') }"
-            >Loja</router-link>
             <router-link to="/marcas" @click="toggleMenu"
                 :class="{ 'router-link-active': $route.path.startsWith('/marcas') }"
             >Designers/Marcas</router-link>
