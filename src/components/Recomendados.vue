@@ -1,6 +1,5 @@
 <script>
 import Roupa from './Roupa.vue';
-import { recomendados } from '../data/roupas';
 export default {
     components: {
         Roupa

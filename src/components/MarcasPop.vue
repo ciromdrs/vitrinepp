@@ -1,6 +1,5 @@
 <script>
 import MarcasContainer from './MarcasContainer.vue';
-import { marcas } from '../data/roupas';
 
 export default {
     props: {

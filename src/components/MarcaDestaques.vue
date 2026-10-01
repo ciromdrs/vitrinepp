@@ -1,5 +1,4 @@
 <script>
-import { roupas } from '../data/roupas';
 import Roupa from './Roupa.vue';
 
 export default {
