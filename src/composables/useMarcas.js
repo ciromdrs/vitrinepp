@@ -12,9 +12,9 @@ import { useApi } from './useApi'
 export function useMarcas() {
   const marcas = ref([]);
   const marcaAtual = ref(null);
-  const { isLoading, error, execute } = useApi();
+  const { isLoading, error } = useApi();
   const { success } = useNotification();
-  const {carregarRoupas} = useRoupas();
+  const {carregarRoupas, roupas } = useRoupas();
   /**
    * Carrega todas as marcas
    */
@@ -22,7 +22,7 @@ export function useMarcas() {
     isLoading.value = true;
     try {
       const data = await getLinhas(SHEET_URL.MARCAS);
-      if (data) destaques.value = data;
+      if (data) marcas.value = data;
     }
     catch (err){
       error.value = err;
@@ -34,11 +34,14 @@ export function useMarcas() {
   /**
    * Carrega uma marca por ID
    */
-  const carregarMarca = async (id) => {
+  const carregarMarca = async (nomeMarca) => {
     await carregarMarcas()
     isLoading.value = true;
     try{
-      const data  = marcas.find(r => r.id === id);
+      const data  = marcas.value.find((m) => m.nome === nomeMarca);
+      marcas.value.forEach(element => {
+        console.log(element.nome)
+      });
       return data; 
     } catch(err){
       error.value = err;
@@ -52,7 +55,7 @@ export function useMarcas() {
    */
   const carregarRoupasDaMarca = async (nomeMarca) => {
     await carregarRoupas()
-    return roupas.filter(r => r.marca === nomeMarca);
+    return roupas.value.filter(r => r.marca === nomeMarca);
     
   }
 

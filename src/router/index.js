@@ -35,7 +35,7 @@ const router = createRouter({
             meta: { title: 'Marcas' }
         },
         {
-            path: '/marcas/:id',
+            path: '/marcas/:nome',
             name: 'MarcaDetalhes',
             component: MarcaDetailsPage,
             meta: { title: 'Detalhes da Marca' }

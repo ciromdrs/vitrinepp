@@ -1,69 +1,58 @@
-<script>
-import MarcaDetails from '../MarcaDetails.vue';
-import Descricao from '../Descricao.vue';
-import MarcaDestaques from '../MarcaDestaques.vue';
-import RoupaContainer from '../RoupaContainer.vue';
-import LoadingSpinner from '../common/LoadingSpinner.vue';
-import ErrorDisplay from '../common/ErrorDisplay.vue';
-import { useMarcas } from '@/composables/useMarcas.js';
+<script setup>
+import { ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 
-export default {
-    components: {
-        MarcaDetails,
-        Descricao,
-        MarcaDestaques,
-        RoupaContainer,
-        LoadingSpinner,
-        ErrorDisplay
-    },
-    data() {
-        return{
-            marcaId: null,
-            marca: null,
-            roupas: null,
-            roupasDestaque: null,
-            isLoading: true,
-            error: null
+import Descricao from '@/components/Descricao.vue'
+import MarcaDestaques from '@/components/MarcaDestaques.vue'
+import RoupaContainer from '@/components/RoupaContainer.vue'
+import LoadingSpinner from '@/components/common/LoadingSpinner.vue'
+import ErrorDisplay from '@/components/common/ErrorDisplay.vue'
+import MarcaDetails from '../MarcaDetails.vue'
+import { useMarcas } from '@/composables/useMarcas'
+
+const route = useRoute()
+
+const { marcas, carregarMarca, carregarRoupasDaMarca } = useMarcas()
+
+const marca = ref(null)
+const roupas = ref([])
+const roupasDestaque = ref([])
+const isLoading = ref(true)
+const error = ref(null)
+
+const carregarDados = async () => {
+    isLoading.value = true
+    error.value = null
+
+    try {
+        const nomeMarca = route.params.nome;
+        marca.value = await carregarMarca(nomeMarca);
+
+        if (!marca.value) {
+            throw new Error('Marca não encontrada')
         }
-    },
-    created() {
-        this.carregarDados()
-    },
-    watch: {
-        '$route.params.id'() {
-            this.carregarDados()
-        }
-    },
-    methods: {
-        async carregarDados() {
-        const { marcas,
-            marcaAtual,
-            isLoading,
-            error,
-            carregarMarca,
-            carregarRoupasDaMarca
-        } = useMarcas();
-        try {
-            const id = this.$route.params.id
 
-            this.marca = carregarMarca(String(id))
+        roupas.value = await carregarRoupasDaMarca(marca.value.nome)
 
-            if (!this.marca) {
-                throw new Error('Marca não encontrada');
-            }
+        roupasDestaque.value = roupas.value.slice(0, 3)
 
-            this.produtos = carregarRoupasDaMarca(this.marca.nome);
-            this.topProdutos = this.produtos.slice(0, 3)
-            
-        } catch (error) {
-            this.error = error
-        } finally {
-            this.isLoading = false
-        }
-    }
+    } catch (err) {
+        error.value = err
+    } finally {
+        isLoading.value = false
     }
 }
+
+carregarDados()
+
+watch(
+    () => route.params.marca,
+    () => {
+        carregarDados()
+    }
+)
 </script>
+```
 
 <template>
     <div>
@@ -83,7 +72,7 @@ export default {
             @retry="carregarDados"
         />
         
-        <!-- Página /marcas/{id} -->
+        <!-- Página /marcas/{nome_marca} -->
         <main v-if="marca && !isLoading && !error">
             <MarcaDetails :marca></MarcaDetails>
             <Descricao :descricao="marca.descricao"></Descricao>

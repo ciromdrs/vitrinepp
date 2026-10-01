@@ -16,8 +16,8 @@ export default {
     <div class="container">
         <Marca
             v-for="marca in marcas"
-            :marca  
-            :key="marca.id_marca"
+            :marca="marca"  
+            :key="marca.nome"
             :editar
             :deletar
             @selecionarMarca="$emit('selecionar-marca', marca)"

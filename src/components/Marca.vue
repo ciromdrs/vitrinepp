@@ -26,11 +26,11 @@ export default {
     </div>
     <div class="marca" v-else>
         <figure>
-            <router-link :to="`${editar ? `admEditarMarca/${marca.id_marca}` : `marcas/${marca.id_marca}`}`">
+            <router-link :to="`${editar ? `admEditarMarca/${marca.nome}` : `marcas/${marca.nome}`}`">
                 <img :src="marca.foto_perfil" alt="Foto da marca">
             </router-link>
         </figure>
-        <router-link :to="`${editar ? `admEditarMarca/${marca.id_marca}` : `marcas/${marca.id_marca}`}`">
+        <router-link :to="`${editar ? `admEditarMarca/${marca.nome}` : `marcas/${marca.nome}`}`">
             <p class="nome">{{ marca.nome }}</p>
         </router-link>
     </div>
