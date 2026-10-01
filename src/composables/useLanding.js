@@ -9,7 +9,7 @@ export function useLanding() {
     const landingImgURL = ref({});
 
     const carregarLandingImg = async () => {
-        isLoading.value = true; // TODO: Remover esta linha?
+        isLoading.value = true; 
         try {
             const data = await getLinhas(SHEET_URL.LANDING);
             if (data) landingImgURL.value = data[0];
