@@ -1,6 +1,5 @@
 <script>
 import Destaques from '../Destaques.vue'
-import Carrossel from '../Carrossel.vue'
 import Conecte from '../Conecte.vue'
 import Descubra from '../Descubra.vue'
 import LoadingSpinner from '../common/LoadingSpinner.vue'
@@ -10,7 +9,6 @@ import {useRoupas} from '../../composables/useRoupas.js'
 export default {
   components: {
     Destaques,
-    Carrossel,
     Conecte,
     Descubra,
     LoadingSpinner,
@@ -77,7 +75,6 @@ export default {
     
     <template v-if="!isLoading && !error">
       <Destaques v-if="destaques.length > 0" :destaques="destaques"></Destaques>
-      <Carrossel></Carrossel>
       <Conecte></Conecte>
       <Descubra v-if="roupas.length > 0" :roupas="roupas"></Descubra>
     </template>
