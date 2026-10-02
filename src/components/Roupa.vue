@@ -16,13 +16,7 @@ export default {
 <template>
     <div class="roupa" :class="{ destaque: roupa.destaque }">
         <figure :title="roupa.nome">
-            <button v-if="deletar" @click="mudarRoupa"> <!-- p/ deletar roupas, botão de ativar modal -->
                 <img :src="roupa.img" alt="Imagem da roupa">
-            </button>
-            <router-link v-else 
-            :to="`${editar ? `/admEditar/${roupa.id}/` : `/loja/${roupa.id}`}`"> <!-- p/ editar ou ir para a roupa -->
-                <img :src="roupa.img" alt="Imagem da roupa">
-            </router-link>
         </figure>
         <div class="description">
             <p class="loja">{{ roupa.marca }}</p>

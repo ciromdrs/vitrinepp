@@ -14,7 +14,7 @@ export default {
 <template>
     <div class="container">
         <Roupa
-            v-for="roupa in roupas" 
+            v-for="roupa in roupas"
             :roupa="roupa"
             :key="roupa.id"
             :editar
